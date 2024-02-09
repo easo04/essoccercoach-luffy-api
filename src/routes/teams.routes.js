@@ -1,16 +1,19 @@
 import {Router} from 'express'
-import {getTeams, getTeamById, createTeam, updateTeam, deleteTeam} from '../controllers/teams.controller.js'
+import {getTeams, getTeamById, createTeam, updateTeam, deleteTeam, getUsersByTeam} from '../controllers/teams.controller.js'
+import {isAuth, isAdmin} from '../../middlewares/auth.js'
 
 const router = Router()
 
-router.get('/teams', getTeams)
+router.get('/teams', isAuth, getTeams)
 
-router.get('/teams/:id', getTeamById)
+router.get('/teams/:id', isAuth, getTeamById)
 
-router.post('/teams', createTeam)
+router.post('/teams', isAdmin, createTeam)
 
-router.put('/teams', updateTeam)
+router.put('/teams', isAdmin, updateTeam)
 
-router.delete('/teams', deleteTeam)
+router.delete('/teams', isAdmin, deleteTeam)
+
+router.get('/teams/users/:id', isAuth, getUsersByTeam)
 
 export default router

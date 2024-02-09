@@ -1,14 +1,14 @@
-import {pool} from '../db.js'
+import { ServiceTeam } from '../services/teams.service.js'
 
 export const getTeams = async (req, res) => {
-    const [rows] = await pool.query('SELECT * FROM teams')
+    const rows = await ServiceTeam.getAll()
     res.json(rows)
 }
 
 export const getTeamById = async (req, res) => {
-    const [rows] = await pool.query('SELECT * FROM teams WHERE id = ?', [req.params.id])
-    if(rows.length <= 0) return res.status(404).json({message:'Team not found'})
-    res.json(rows[0])
+    const team = await ServiceTeam.getTeamById(req.params.id)
+    if(team === null) return res.status(404).json({message:'Team not found'})
+    res.json(team)
 }
 
 export const createTeam =  async (req, res) => {
@@ -19,13 +19,17 @@ export const createTeam =  async (req, res) => {
         res.send(responseError)
     }
 
-    const [rows] = await pool.query('INSERT INTO teams (name) VALUES (?)', [name]);
+    const teamId = await ServiceTeam.create(req.body);
 
     res.send({ 
         code: 200, 
-        id: rows.insertId,
-        name
+        id: teamId
     })
+}
+
+export const getUsersByTeam = async (req, res) =>{
+    const rows = await ServiceTeam.getAllUsersByTeam(req.params.id)
+    res.json(rows)
 }
 
 export const updateTeam =  (req, res) => res.send('put respose')

@@ -77,3 +77,22 @@ CREATE TABLE userActivity(
 );
 
 DESCRIBE userActivity;
+
+CREATE TABLE userTeam(
+    id INT NOT NULL AUTO_INCREMENT,
+    teamId INT,
+    userId INT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (teamId)
+        REFERENCES teams (id) 
+        ON UPDATE RESTRICT 
+        ON DELETE CASCADE,
+    FOREIGN KEY (userId)
+        REFERENCES users (id) 
+        ON UPDATE RESTRICT 
+        ON DELETE CASCADE
+);
+
+DESCRIBE userTeam;
+
+ALTER TABLE userTeam ADD access ENUM('player', 'coach', 'admin');

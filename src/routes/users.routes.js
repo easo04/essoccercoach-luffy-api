@@ -1,18 +1,17 @@
 import {Router} from 'express'
-import {getUserById, getUsers, createUser, getUserByTeamId} from '../controllers/users.controller.js'
+import {getUserById, getUsers, createUser, getTeamsByUserId, addTeamToUser} from '../controllers/users.controller.js'
+import {isAuth, isAdmin} from '../../middlewares/auth.js'
 
 const router = Router()
 
-router.get('/users', getUsers)
+router.get('/users', isAuth, getUsers)
 
-router.get('/users/:id', getUserById)
+router.get('/users/:id', isAuth, getUserById)
 
-router.get('/users/team/:id', getUserByTeamId)
+router.get('/users/teams/:id', isAuth, getTeamsByUserId)
 
-router.post('/users', createUser)
+router.post('/users', isAdmin, createUser)
 
-//router.put('/users', updateTeam)
-
-//router.delete('/users', deleteTeam)
+router.post('/users/team', isAdmin, addTeamToUser)
 
 export default router

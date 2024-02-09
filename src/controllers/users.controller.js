@@ -1,32 +1,43 @@
-import {pool} from '../db.js'
+import { ServiceUser } from '../services/users.services.js'
 
 export const getUsers = async (req, res) => {
-    const [rows] = await pool.query('SELECT * FROM users')
+    const rows = await ServiceUser.getAll()
     res.json(rows)
 }
 
 export const getUserById = async (req, res) => {
-    const [rows] = await pool.query('SELECT * FROM users WHERE id = ?', [req.params.id])
-    if(rows.length <= 0) return res.status(404).json({message:'User not found'})
-    res.json(rows[0])
+    const user = await ServiceUser.getUserById(req.params.id)
+    if(user === null) return res.status(404).json({message:'User not found'})
+    res.json(user)
 }
 
-export const getUserByTeamId = async (req, res) => {
-    const [rows] = await pool.query('SELECT * FROM users WHERE teamId = ?', [req.params.id])
+export const getTeamsByUserId = async (req, res) => {
+    const rows = await ServiceUser.getAllTeamsByUser(req.params.id)
     res.json(rows)
 }
 
 export const createUser =  async (req, res) => {
-    const {firstName, lastName, email, birthDate, position, numberPlayer, teamId, type} = req.body;
-    const responseError = {code: 500, message: 'DTO invalid'}
+    const {email} = req.body
 
-    const [rows] = await pool.query('INSERT INTO users (firstName, lastName, email, birthDate, positon, numberPlayer, teamId, type) VALUES (?,?,?,?,?,?,?,?)',
-        [firstName, lastName, email, birthDate, position, numberPlayer, teamId, type]);
+    if(email && ServiceUser.isUserExistByEmail(email)){
+        return res.status(500).json({message: 'User already exist with same email', code:'USER_ALREADY_EXIST_EMAIL'})
+    }
+
+    const userId = await ServiceUser.create(req.body)
 
     res.send({ 
         code: 200, 
-        id: rows.insertId,
-        email,
-        teamId
+        userId
+    })
+}
+
+export const addTeamToUser = async (req, res) =>{
+    const {teamId, userId, access} = req.body
+
+    await ServiceUser.addTeamToUser(teamId, userId, access)
+
+    res.send({ 
+        code: 200, 
+        message:'User added'
     })
 }
