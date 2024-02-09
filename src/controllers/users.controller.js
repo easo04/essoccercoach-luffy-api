@@ -16,6 +16,11 @@ export const getTeamsByUserId = async (req, res) => {
     res.json(rows)
 }
 
+export const getActivityByUser = async (req, res) => {
+    const activityResult = await ServiceUser.getActivityByUser(req.body)
+    res.json(activityResult)
+}
+
 export const createUser =  async (req, res) => {
     const {email} = req.body
 

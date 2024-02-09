@@ -50,4 +50,10 @@ export class ServiceUser{
         await pool.query('INSERT INTO userTeam (teamId, userId, access) VALUES (?,?,?)',
             [teamId, userId, access]);
     }
+
+    static async getActivityByUser(activityUserDTO){
+        const {activityId, userId} = activityUserDTO
+        const [rows] = await pool.query('SELECT * FROM useractivity where activityId = ? AND userId = ?', [activityId, userId])
+        return rows[0]
+    }
 }
