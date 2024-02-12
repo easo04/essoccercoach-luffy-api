@@ -22,12 +22,7 @@ CREATE TABLE users(
     positon ENUM('GK', 'DFC', 'MC', 'ATT'),
     numberPlayer INT,
     birthDate DATE,
-    teamId INT,
-    PRIMARY KEY (id),
-    FOREIGN KEY (teamId)
-        REFERENCES teams (id) 
-        ON UPDATE RESTRICT 
-        ON DELETE CASCADE 
+    PRIMARY KEY (id)
 );
 
 DESCRIBE users;
@@ -45,6 +40,7 @@ CREATE TABLE activities(
     dateActivity DATETIME,
     teamId INT,
     userCreateId INT,
+    mycrocicleId INT,
     EPR INT,
     PRIMARY KEY (id),
     FOREIGN KEY (teamId)
@@ -54,10 +50,17 @@ CREATE TABLE activities(
     FOREIGN KEY (userCreateId)
         REFERENCES users (id) 
         ON UPDATE RESTRICT 
+        ON DELETE CASCADE,
+    FOREIGN KEY (mycrocicleId)
+        REFERENCES mycrocicle (id) 
+        ON UPDATE RESTRICT 
         ON DELETE CASCADE
 );
 
 DESCRIBE activities;
+
+/*ALTER TABLE activities ADD mycrocicleId INT;
+ALTER TABLE activities ADD CONSTRAINT fk_mycrocicleId FOREIGN KEY (mycrocicleId) REFERENCES mycrocicle (id);*/
 
 CREATE TABLE userActivity(
     id INT NOT NULL AUTO_INCREMENT,
@@ -82,6 +85,7 @@ CREATE TABLE userTeam(
     id INT NOT NULL AUTO_INCREMENT,
     teamId INT,
     userId INT,
+    access ENUM('player', 'coach', 'admin'),
     PRIMARY KEY (id),
     FOREIGN KEY (teamId)
         REFERENCES teams (id) 
@@ -95,4 +99,31 @@ CREATE TABLE userTeam(
 
 DESCRIBE userTeam;
 
-ALTER TABLE userTeam ADD access ENUM('player', 'coach', 'admin');
+CREATE TABLE season(
+    id INT NOT NULL AUTO_INCREMENT,
+    startDate DATE,
+    endDate DATE,
+    name VARCHAR(60),
+    teamId INT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (teamId)
+        REFERENCES teams (id) 
+        ON UPDATE RESTRICT 
+        ON DELETE CASCADE
+);
+
+CREATE TABLE mycrocicle(
+    id INT NOT NULL AUTO_INCREMENT,
+    startDate DATE,
+    endDate DATE,
+    theme VARCHAR(200),
+    seasonId INT,
+    teamId INT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (seasonId)
+        REFERENCES season (id) 
+        ON UPDATE RESTRICT 
+        ON DELETE CASCADE
+
+);
+

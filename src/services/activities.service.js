@@ -15,9 +15,9 @@ export class ServiceActivity{
     }
     
     static async create (activityDTO){
-        const {name, type, dateActivity, teamId, userCreateId, EPR} = activityDTO;
+        const {name, type, dateActivity, teamId, userCreateId, EPR, mycrocicleId} = activityDTO;
     
-        const [rows] = await pool.query('INSERT INTO activities (name, type, dateActivity, teamId, userCreateId, EPR) VALUES (?)', [name, type, dateActivity, teamId, userCreateId, EPR]);
+        const [rows] = await pool.query('INSERT INTO activities (name, type, dateActivity, teamId, userCreateId, EPR, mycrocicleId) VALUES (?,?,?,?,?,?,?)', [name, type, dateActivity, teamId, userCreateId, EPR, mycrocicleId]);
 
         return rows.insertId
     }
@@ -25,7 +25,7 @@ export class ServiceActivity{
     static async addUserToActivity(activityUserDTO){
         const {activityId, userId, EPR, notes} = activityUserDTO;
     
-        const [rows] = await pool.query('INSERT INTO useractivity (activityId, userId, EPR, notes) VALUES (?)', [activityId, userId, EPR, notes]);
+        const [rows] = await pool.query('INSERT INTO useractivity (activityId, userId, EPR, notes) VALUES (?,?,?,?)', [activityId, userId, EPR, notes]);
 
         return rows.insertId
     }
