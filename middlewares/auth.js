@@ -20,19 +20,21 @@ export const isAuth = async (req, res, next) =>{
     const token = req.headers.authorization.split(" ")[1]
     const payload = jwt.decode(token, JWT_SECRET_KEY)
 
+    console.log('payload',payload)
+
     if(payload.exp <= moment().unix()){
         return res.status(401).send({message:'Token expired'})
     }
 
-    const user = await ServiceUser.getUserById(payload.userId)
+    const user = await ServiceUser.getUserByEmail(payload.email)
 
-    console.log(user + ' valid token')
+    console.log('valid token user', user)
 
     if(user === null){
         return res.status(401).send({message:'Token invalid'})
     }
 
-    req.user = payload.userId
+    req.user = user
     next()
 }
 
@@ -55,11 +57,9 @@ export const isAdmin = async (req, res, next) =>{
         return res.status(401).send({message:'Token expired'})
     }
 
-    const isAdmin = await ServiceUser.isUserAdmin(payload.userId)
+    const user = await ServiceUser.getUserByEmail(payload.email)
 
-    console.log(isAdmin + ' isadmin')
-
-    if(!isAdmin){
+    if(user.type !== 'admin'){
         return res.status(401).send({message:'Not authorization'})
     }
 

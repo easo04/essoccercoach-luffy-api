@@ -25,4 +25,10 @@ export class ServiceSeason{
         const [rows] = await pool.query('SELECT mycrocicle.* FROM mycrocicle INNER JOIN season ON mycrocicle.seasonId = season.id WHERE season.id = ?', [idSeason])
         return rows
     }
+
+    static async getCurrentSeasonByTeam(teamId, date){
+        const [rows] = await pool.query('SELECT * FROM season WHERE teamId = ? AND startDate <= ? AND endDate >= ?', [teamId, date, date])
+        if(rows.length <= 0) return null
+        return rows[0]
+    }
 }

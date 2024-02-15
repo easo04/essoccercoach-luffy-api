@@ -1,5 +1,7 @@
 'user strict'
 import {pool} from '../db.js'
+import { ServiceSeason } from '../services/seasons.service.js'
+import { ServiceActivity } from '../services/activities.service.js'
 
 export class ServiceUser{
 
@@ -10,6 +12,12 @@ export class ServiceUser{
 
     static async getUserById (id) {
         const [rows] = await pool.query('SELECT * FROM users WHERE id = ?', [id])
+        if(rows.length <= 0) return null
+        return rows[0]
+    }
+
+    static async getUserByEmail(email){
+        const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email])
         if(rows.length <= 0) return null
         return rows[0]
     }
@@ -42,7 +50,7 @@ export class ServiceUser{
     }
 
     static async getAllTeamsByUser(id){
-        const [rows] = await pool.query('select teams.id, teams.name from teams inner join userTeam on teams.id = userTeam.teamId where userTeam.userId = ?', [id])
+        const [rows] = await pool.query('select teams.id, teams.name from teams inner join userteam on teams.id = userteam.teamId where userteam.userId = ?', [id])
         return rows
     }
 
@@ -55,5 +63,23 @@ export class ServiceUser{
         const {activityId, userId} = activityUserDTO
         const [rows] = await pool.query('SELECT * FROM useractivity where activityId = ? AND userId = ?', [activityId, userId])
         return rows[0]
+    }
+
+    static async getSummaryTeamsByUser(user){
+        const {firstName, lastName, email, type, position, id} = user
+
+        let teams = await this.getAllTeamsByUser(id)
+
+        for(let i=0;i<teams.length;i++){
+            const currentSeason = await ServiceSeason.getCurrentSeasonByTeam(teams[i].id, new Date())
+            teams[i].currentSeason = currentSeason
+        }
+
+        const summaryDTO = {
+            infos:{id, firstName, lastName, email, type, position},
+            teams: teams,
+        }
+
+        return summaryDTO
     }
 }

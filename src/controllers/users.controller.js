@@ -21,6 +21,11 @@ export const getActivityByUser = async (req, res) => {
     res.json(activityResult)
 }
 
+export const getSummaryTeams = async (req, res) =>{
+    const response = await ServiceUser.getSummaryTeamsByUser(req.user)
+    res.json(response)
+}
+
 export const createUser =  async (req, res) => {
     const {email} = req.body
 
